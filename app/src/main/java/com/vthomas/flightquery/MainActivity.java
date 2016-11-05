@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements AIListener{
     int permsRequestCode = 200;
 
     private AIService aiService;
+    private QueryResult q = new QueryResult();
     private Button listenButton;
     private TextView resultTextView;
 
@@ -65,13 +66,14 @@ public class MainActivity extends AppCompatActivity implements AIListener{
             }
         }
 
-        String test = Analyzer.airline(result.getParameters());
+        q = Analyzer.airline(result.getParameters(), result.getAction());
 
         //Show results in TextView
         resultTextView.setText("Query:" + result.getResolvedQuery() +
                 "\nAction: " + result.getAction() +
                 "\nParameters: " + parameterString +
-                "\n testing " + test);
+                "\n text " + q.get_text_string() +
+                "\n speech " + q.get_speech_string());
     }
 
     @Override

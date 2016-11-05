@@ -69,4 +69,9 @@ public class Flight {
         return airline + " " + Integer.toString(num) + " " +
                 depart_city + " " + depart_time + " " + arrive_city + " " + arrive_time + " " + status;
     }
+
+    public String speak_flight(){
+        return airline + " flight " + Integer.toString(num) + " from " + depart_city +" to " + arrive_city +
+                 " departing at " + depart_time +  " and arriving at " + arrive_time + " status is " + status;
+    }
 }
