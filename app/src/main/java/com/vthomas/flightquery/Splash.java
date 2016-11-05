@@ -56,7 +56,7 @@ public class Splash extends AppCompatActivity implements OnInitListener {
     Thread timer = new Thread() {
         public void run() {
             try {
-                sleep(8000);
+                sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
@@ -85,7 +85,7 @@ public class Splash extends AppCompatActivity implements OnInitListener {
     public void onInit(int initStatus) {
         if (initStatus == TextToSpeech.SUCCESS) {
             tts.setLanguage(Locale.US);
-            tts.speak(text, TextToSpeech.QUEUE_ADD, null, null);
+//            tts.speak(text, TextToSpeech.QUEUE_ADD, null, null);
         }
         else if (initStatus == TextToSpeech.ERROR) {
             Toast.makeText(this, "Sorry! Text To Speech failed...", Toast.LENGTH_LONG).show();
