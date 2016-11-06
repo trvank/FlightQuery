@@ -143,7 +143,11 @@ public class Analyzer {
         if(map.containsKey("time_next_first_last") && array_contains(flight_check)){
             when_string = "" + map.get("time_next_first_last");
             if(map.get("time_frame").toString().replace("\"", "").equals("next")){
+                int low_idx = 0;
+                boolean found = false;
+                for(int i = 0; i < 10; i++){
 
+                }
             }
         }
 
