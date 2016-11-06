@@ -138,6 +138,7 @@ public class Analyzer {
 
         }
 
+        /*working on this but starting a new branch
         //this needs to be checked after for loop because only returns one
         if(map.containsKey("time_next_first_last") && array_contains(flight_check)){
             when_string = "" + map.get("time_next_first_last");
@@ -145,6 +146,7 @@ public class Analyzer {
 
             }
         }
+        */
 
         //fill data lists so speech know what to say
         //fill text string (to show full info of flights matching query)
