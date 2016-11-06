@@ -26,6 +26,7 @@ public class Analyzer {
         ArrayList<String> arrive_time_list = new ArrayList<>();
         ArrayList<String> depart_city_list = new ArrayList<>();
         ArrayList<String> arrive_city_list = new ArrayList<>();
+        ArrayList<String> status_list = new ArrayList<>();
 
         String airline_string = "";
         String num_string = "";
@@ -77,13 +78,13 @@ public class Analyzer {
                     }
                     else if(map.get("time_frame").toString().replace("\"", "").equals("after")){
                         depart_time_string = " departing after " + map.get("depart_time");
-                        if(!(check < 0)){
+                        if(!(check > 0)){
                             flight_check[i] = false;
                         }
                     }
                     else if(map.get("time_frame").toString().replace("\"", "").equals("before")){
                         depart_time_string = " departing before " + map.get("depart_time");
-                        if(!(check > 0)){
+                        if(!(check < 0)){
                             flight_check[i] = false;
                         }
                     }
@@ -103,6 +104,7 @@ public class Analyzer {
 
             if(map.containsKey("arrive_time")){
                 int check = flights[i].get_arrive_time().compareTo(map.get("arrive_time").toString().replace("\"", ""));
+                Log.d("time", flights[i].get_arrive_time() + " " + map.get("arrive_time").toString().replace("\"", "") + " check " + check);
                 if(map.containsKey("time_frame")){
                     if(map.get("time_frame").toString().replace("\"", "").equals("at")){
                         arrive_time_string = " arriving at " + map.get("arrive_time");
@@ -112,17 +114,17 @@ public class Analyzer {
                     }
                     else if(map.get("time_frame").toString().replace("\"", "").equals("after")){
                         arrive_time_string = " arriving after " + map.get("arrive_time");
-                        if(!(check < 0)){
+                        if(!(check > 0)){
                             flight_check[i] = false;
                         }
                     }
                     else if(map.get("time_frame").toString().replace("\"", "").equals("before")){
                         arrive_time_string = " arriving before " + map.get("arrive_time");
-                        if(!(check > 0)){
+                        if(!(check < 0)){
                             flight_check[i] = false;
                         }
                     }
-                    //TODO DO WE NEED TO SAY IF NO TIME FRAME -> NOT ENOUGH INFO????
+                    //TODO DO WE NEED TO SAY IF NO TIME FRAME -> NOT ENOUGH INFO???? AND NEED TO HANDLE NEXT CASE
                 }
             }
 
@@ -143,17 +145,23 @@ public class Analyzer {
                 if(!(airline_list.contains(flights[i].get_airline()))) {
                     airline_list.add(flights[i].get_airline());
                 }
-                if(!(depart_time_list.contains(flights[i].get_delay_time()))) {
-                    depart_time_list.add(flights[i].get_depart_time());
+                if(!(depart_time_list.contains(flights[i].get_depart_time()))) {
+                    depart_time_list.add(flights[i].get_airline() + " flight " + flights[i].get_flight()
+                            + " departs at " + flights[i].get_depart_time());
                 }
                 if(!(arrive_time_list.contains(flights[i].get_arrive_time()))) {
-                    arrive_time_list.add(flights[i].get_arrive_time());
+                    arrive_time_list.add(flights[i].get_airline() + " flight " + flights[i].get_flight()
+                            + " arrives at " + flights[i].get_arrive_time());
                 }
                 if(!(depart_city_list.contains(flights[i].get_depart_city()))){
                     depart_city_list.add(flights[i].get_depart_city());
                 }
                 if(!(arrive_city_list.contains(flights[i].get_arrive_city()))){
                     arrive_city_list.add(flights[i].get_arrive_city());
+                }
+                if(!(status_list.contains(flights[i].get_status()))) {
+                    status_list.add(flights[i].get_airline() + " flight " + flights[i].get_flight()
+                            + " is " + flights[i].get_status());
                 }
                 flight_string = flight_string.concat("\n" + flights[i].to_string());
                 Log.d("string", "string is " + flight_string);
@@ -184,14 +192,44 @@ public class Analyzer {
 
         //TODO: city in ai.api and here
 
-        else if(action.equals("city")){
-            intro_string = "The cities " +  airline_string + num_string + depart_city_string +
+        else if(action.equals("depart_city")){
+            intro_string = "The departure cities " +  airline_string + num_string + depart_city_string +
                     arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
+            for(String city: depart_city_list){
+                intro_string = intro_string.concat("\n" + city);
+            }
         }
 
-        else if(action.equals("time")){
-            intro_string = "The times for that are: ";
+        else if(action.equals("arrive_city")){
+            intro_string = "The arrival cities " +  airline_string + num_string + depart_city_string +
+                    arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
+            for(String city: arrive_city_list){
+                intro_string = intro_string.concat("\n" + city);
+            }
+        }
 
+        else if(action.equals("depart_time")){
+            intro_string = "The departure times for " +  airline_string + num_string + depart_city_string +
+                    arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
+            for(String time: depart_time_list){
+                intro_string = intro_string.concat("\n" + time);
+            }
+        }
+
+        else if(action.equals("arrive_time")){
+            intro_string = "The arrival times for " +  airline_string + num_string + depart_city_string +
+                    arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
+            for(String time: arrive_time_list){
+                intro_string = intro_string.concat("\n" + time);
+            }
+        }
+
+        else if(action.equals("status")){
+            intro_string = "The statuses for " +  airline_string + num_string + depart_city_string +
+                    arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
+            for(String status: status_list){
+                intro_string = intro_string.concat("\n" + status);
+            }
         }
 
         //set the strings to be passed back to mainActivity

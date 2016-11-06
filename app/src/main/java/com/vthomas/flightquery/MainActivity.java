@@ -66,7 +66,9 @@ public class MainActivity extends AppCompatActivity implements AIListener{
             }
         }
 
-        q = Analyzer.airline(result.getParameters(), result.getAction());
+        if(!(result.getAction().equals("input.unknown"))){
+            q = Analyzer.airline(result.getParameters(), result.getAction());
+        }
 
         //Show results in TextView
         resultTextView.setText("Query:" + result.getResolvedQuery() +
