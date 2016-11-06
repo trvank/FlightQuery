@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements AIListener{
 
         //request permission for recording audio if not yet granted
         if(!hasPermission(perms[0])){
-            //requestPermissions(perms, permsRequestCode);
+            requestPermissions(perms, permsRequestCode);
         }
 
     }
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements AIListener{
 
     private boolean hasPermission(String permission){
         if(needsPermission()){
-            //return(checkSelfPermission(permission)== PackageManager.PERMISSION_GRANTED);
+            return(checkSelfPermission(permission)== PackageManager.PERMISSION_GRANTED);
         }
         return true;
     }
