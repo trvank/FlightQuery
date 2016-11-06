@@ -35,6 +35,7 @@ public class Analyzer {
         String depart_time_string = "";
         String arrive_time_string = "";
         String status_string = "";
+        String when_string = "";
         String intro_string = "";
         String flight_string = "";
 
@@ -135,6 +136,14 @@ public class Analyzer {
                 }
             }
 
+        }
+
+        //this needs to be checked after for loop because only returns one
+        if(map.containsKey("time_next_first_last") && array_contains(flight_check)){
+            when_string = "" + map.get("time_next_first_last");
+            if(map.get("time_frame").toString().replace("\"", "").equals("next")){
+
+            }
         }
 
         //fill data lists so speech know what to say
@@ -268,6 +277,16 @@ public class Analyzer {
         table.add(new Flight("CarsonAir", 672, "Portland", "13:25:00", "New York", "20:36:00", "Scheduled", "99:99:99"));
 
         return table;
+    }
+
+    //since small flight list, just brute force check for this toy program
+    static private boolean array_contains(boolean array[]){
+        for (int i = 0; i < array.length; i++){
+            if(array[i]){
+                return true;
+            }
+        }
+        return false;
     }
 
 
