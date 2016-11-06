@@ -5,7 +5,9 @@ import android.util.Log;
 
 import com.google.gson.JsonElement;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -14,8 +16,7 @@ import java.util.Map;
 public class Analyzer {
 
 
-
-    static QueryResult airline(Map<String, JsonElement> map, String action){
+    static QueryResult airline(Map<String, JsonElement> map, String action) {
         QueryResult q = new QueryResult();
         //all the flights
 //        ArrayList<Flight> flights = create_list();
@@ -45,47 +46,45 @@ public class Analyzer {
         Log.d("checking...", map.toString());
         Log.d("shouldn't have", String.valueOf(map.containsKey("airline")));
         //go through flights and remove ones that don't match parameters
-        for(int i = 0; i < 10; i++){
-            if(map.containsKey("airline")){
+        for (int i = 0; i < 10; i++) {
+            if (map.containsKey("airline")) {
                 airline_string = " with airline " + map.get("airline");
                 Log.d("checking...", "checking airline for" + i + " val for airline = " + map.get("airline") + " and we have = " + flights[i].get_airline());
-                if(!(flights[i].get_airline().equals(map.get("airline").toString().replace("\"", "")))){
+                if (!(flights[i].get_airline().equals(map.get("airline").toString().replace("\"", "")))) {
                     flight_check[i] = false;
                 }
             }
 
-            if(map.containsKey("flight_num")){
+            if (map.containsKey("flight_num")) {
                 num_string = " flight " + map.get("flight_num");
-                if(!(Integer.toString(flights[i].get_flight()).equals(map.get("flight_num").toString().replace("\"", "")))){
+                if (!(Integer.toString(flights[i].get_flight()).equals(map.get("flight_num").toString().replace("\"", "")))) {
                     flight_check[i] = false;
                 }
             }
 
-            if(map.containsKey("depart_city")){
+            if (map.containsKey("depart_city")) {
                 depart_city_string = " flying from " + map.get("depart_city");
-                if(!(flights[i].get_depart_city().equals(map.get("depart_city").toString().replace("\"", "")))){
+                if (!(flights[i].get_depart_city().equals(map.get("depart_city").toString().replace("\"", "")))) {
                     flight_check[i] = false;
                 }
             }
 
-            if(map.containsKey("depart_time")){
+            if (map.containsKey("depart_time")) {
                 int check = flights[i].get_depart_time().compareTo(map.get("depart_time").toString().replace("\"", ""));
-                if(map.containsKey("time_frame")){
-                    if(map.get("time_frame").toString().replace("\"", "").equals("at")){
+                if (map.containsKey("time_frame")) {
+                    if (map.get("time_frame").toString().replace("\"", "").equals("at")) {
                         depart_time_string = " departing at " + map.get("depart_time");
-                        if(check != 0){
+                        if (check != 0) {
                             flight_check[i] = false;
                         }
-                    }
-                    else if(map.get("time_frame").toString().replace("\"", "").equals("after")){
+                    } else if (map.get("time_frame").toString().replace("\"", "").equals("after")) {
                         depart_time_string = " departing after " + map.get("depart_time");
-                        if(!(check > 0)){
+                        if (!(check > 0)) {
                             flight_check[i] = false;
                         }
-                    }
-                    else if(map.get("time_frame").toString().replace("\"", "").equals("before")){
+                    } else if (map.get("time_frame").toString().replace("\"", "").equals("before")) {
                         depart_time_string = " departing before " + map.get("depart_time");
-                        if(!(check < 0)){
+                        if (!(check < 0)) {
                             flight_check[i] = false;
                         }
                     }
@@ -93,35 +92,33 @@ public class Analyzer {
                 }
             }
 
-            if(map.containsKey("arrive_city")){
+            if (map.containsKey("arrive_city")) {
                 Log.d("checking...", "checking arrival for" + i);
                 Log.d("arrival", "arrival = " + map.get("arrive_city") + " array has = " + flights[i].get_arrive_city());
                 arrive_city_string = " flying to " + map.get("arrive_city");
-                if(!(flights[i].get_arrive_city().equals(map.get("arrive_city").toString().replace("\"", "")))){
+                if (!(flights[i].get_arrive_city().equals(map.get("arrive_city").toString().replace("\"", "")))) {
                     Log.d("updating", "update " + i + " to false");
                     flight_check[i] = false;
                 }
             }
 
-            if(map.containsKey("arrive_time")){
+            if (map.containsKey("arrive_time")) {
                 int check = flights[i].get_arrive_time().compareTo(map.get("arrive_time").toString().replace("\"", ""));
                 Log.d("time", flights[i].get_arrive_time() + " " + map.get("arrive_time").toString().replace("\"", "") + " check " + check);
-                if(map.containsKey("time_frame")){
-                    if(map.get("time_frame").toString().replace("\"", "").equals("at")){
+                if (map.containsKey("time_frame")) {
+                    if (map.get("time_frame").toString().replace("\"", "").equals("at")) {
                         arrive_time_string = " arriving at " + map.get("arrive_time");
-                        if(check != 0){
+                        if (check != 0) {
                             flight_check[i] = false;
                         }
-                    }
-                    else if(map.get("time_frame").toString().replace("\"", "").equals("after")){
+                    } else if (map.get("time_frame").toString().replace("\"", "").equals("after")) {
                         arrive_time_string = " arriving after " + map.get("arrive_time");
-                        if(!(check > 0)){
+                        if (!(check > 0)) {
                             flight_check[i] = false;
                         }
-                    }
-                    else if(map.get("time_frame").toString().replace("\"", "").equals("before")){
+                    } else if (map.get("time_frame").toString().replace("\"", "").equals("before")) {
                         arrive_time_string = " arriving before " + map.get("arrive_time");
-                        if(!(check < 0)){
+                        if (!(check < 0)) {
                             flight_check[i] = false;
                         }
                     }
@@ -129,9 +126,9 @@ public class Analyzer {
                 }
             }
 
-            if(map.containsKey("status")){
+            if (map.containsKey("status")) {
                 status_string = " with status of " + map.get("status");
-                if(!(flights[i].get_status().equals(map.get("status").toString().replace("\"", "")))){
+                if (!(flights[i].get_status().equals(map.get("status").toString().replace("\"", "")))) {
                     flight_check[i] = false;
                 }
             }
@@ -140,40 +137,155 @@ public class Analyzer {
 
 
         //this needs to be checked after for loop because only returns one
-        if(map.containsKey("time_next_first_last") && array_contains(flight_check)){
+        if (map.containsKey("time_next_first_last") && array_contains(flight_check)) {
             when_string = "" + map.get("time_next_first_last");
-            if(map.get("time_frame").toString().replace("\"", "").equals("next")){
-                int low_idx = 0;
-                boolean found = false;
-                for(int i = 0; i < 10; i++){
+            int idx = 0;
+            boolean found = false;
+            Date date = new Date();
+            SimpleDateFormat f = new SimpleDateFormat("kk:mm");
+            String time_now = f.format(date) + ":00";
+            Log.d("date test: ", time_now);
+            //check for next item
+            if (map.get("time_next_first_last").toString().replace("\"", "").equals("next")) {
+                if (map.containsKey("plane_action") && map.get("plane_action").toString().replace("\"", "").equals("arrive")) {
+                    String temp = "99:99:99";
+                    for (int i = 0; i < 10; i++) {
+                        if (flight_check[i]) {
+                            int check = flights[i].get_arrive_time().compareTo(time_now);
+                            flight_check[i] = false;
+                            if (check > 0) {
+                                if (flights[i].get_depart_time().compareTo(temp) < 0) {
+                                    temp = flights[i].get_depart_time();
+                                    found = true;
+                                    idx = i;
+                                }
+                            }
+                        }
+                    }
+                    if (found) {
+                        flight_check[idx] = true;
+                    }
+                }
+                //all others are departure checks
+                else {
+                    String temp = "99:99:99";
+                    for (int i = 0; i < 10; i++) {
+                        if (flight_check[i]) {
+                            int check = flights[i].get_depart_time().compareTo(time_now);
+                            flight_check[i] = false;
+                            if (check > 0) {
+                                if (flights[i].get_depart_time().compareTo(temp) < 0) {
+                                    temp = flights[i].get_depart_time();
+                                    found = true;
+                                    idx = i;
+                                }
+                            }
+                        }
+                    }
+                    if (found) {
+                        flight_check[idx] = true;
+                    }
+                }
+            }
 
+            //check for last item
+            if (map.get("time_next_first_last").toString().replace("\"", "").equals("last")) {
+                if (map.containsKey("plane_action") && map.get("plane_action").toString().replace("\"", "").equals("arrive")) {
+                    String temp = "00:00:00";
+                    for (int i = 0; i < 10; i++) {
+                        if (flight_check[i]) {
+                            flight_check[i] = false;
+                            if (flights[i].get_depart_time().compareTo(temp) > 0) {
+                                temp = flights[i].get_depart_time();
+                                found = true;
+                                idx = i;
+                            }
+                        }
+                    }
+                    if (found) {
+                        flight_check[idx] = true;
+                    }
+                }
+                //all others are departure checks
+                else {
+                    String temp = "00:00:00";
+                    for (int i = 0; i < 10; i++) {
+                        if (flight_check[i]) {
+                            flight_check[i] = false;
+                            if (flights[i].get_depart_time().compareTo(temp) > 0) {
+                                temp = flights[i].get_depart_time();
+                                found = true;
+                                idx = i;
+                            }
+                        }
+                    }
+                    if (found) {
+                        flight_check[idx] = true;
+                    }
+                }
+            }
+
+            //check for first item
+            if (map.get("time_next_first_last").toString().replace("\"", "").equals("first")) {
+                if (map.containsKey("plane_action") && map.get("plane_action").toString().replace("\"", "").equals("arrive")) {
+                    String temp = "99:99:99";
+                    for (int i = 0; i < 10; i++) {
+                        if (flight_check[i]) {
+                            flight_check[i] = false;
+                            if (flights[i].get_depart_time().compareTo(temp) < 0) {
+                                temp = flights[i].get_depart_time();
+                                found = true;
+                                idx = i;
+                            }
+                        }
+                    }
+                    if (found) {
+                        flight_check[idx] = true;
+                    }
+                }
+                //all others are departure checks
+                else {
+                    String temp = "99:99:99";
+                    for (int i = 0; i < 10; i++) {
+                        if (flight_check[i]) {
+                            flight_check[i] = false;
+                            if (flights[i].get_depart_time().compareTo(temp) < 0) {
+                                temp = flights[i].get_depart_time();
+                                found = true;
+                                idx = i;
+                            }
+                        }
+                    }
+                    if (found) {
+                        flight_check[idx] = true;
+                    }
                 }
             }
         }
 
         //fill data lists so speech know what to say
         //fill text string (to show full info of flights matching query)
-        for(int i = 0; i < 10; i++){
-            if(flight_check[i]){
- //               Log.d("string", i + " = " + flight_check[i] + " need " + flights[i].to_String());
-                if(!(airline_list.contains(flights[i].get_airline()))) {
+        for (int i = 0; i < 10; i++) {
+            if (flight_check[i]) {
+                //               Log.d("string", i + " = " + flight_check[i] + " need " + flights[i].to_String());
+                if (!(airline_list.contains(flights[i].get_airline()))) {
                     airline_list.add(flights[i].get_airline());
                 }
-                if(!(depart_time_list.contains(flights[i].get_depart_time()))) {
+                if (!(depart_time_list.contains(flights[i].get_depart_time()))) {
                     depart_time_list.add(flights[i].get_airline() + " flight " + flights[i].get_flight()
                             + " departs at " + flights[i].get_depart_time());
                 }
-                if(!(arrive_time_list.contains(flights[i].get_arrive_time()))) {
+                if (!(arrive_time_list.contains(flights[i].get_arrive_time()))) {
                     arrive_time_list.add(flights[i].get_airline() + " flight " + flights[i].get_flight()
                             + " arrives at " + flights[i].get_arrive_time());
                 }
-                if(!(depart_city_list.contains(flights[i].get_depart_city()))){
+                if (!(depart_city_list.contains(flights[i].get_depart_city()))) {
                     depart_city_list.add(flights[i].get_depart_city());
                 }
-                if(!(arrive_city_list.contains(flights[i].get_arrive_city()))){
+                if (!(arrive_city_list.contains(flights[i].get_arrive_city()))) {
                     arrive_city_list.add(flights[i].get_arrive_city());
                 }
-                if(!(status_list.contains(flights[i].get_status()))) {
+                if (!(status_list.contains(flights[i].get_status()))) {
                     status_list.add(flights[i].get_airline() + " flight " + flights[i].get_flight()
                             + " is " + flights[i].get_status());
                 }
@@ -183,22 +295,19 @@ public class Analyzer {
         }
 
 
-
-
         //set the speech string to say only info asked for
-        if(action.equals("flight")){
-            intro_string = "The flights " +  airline_string + num_string + depart_city_string +
+        if (action.equals("flight")) {
+            intro_string = "The flights " + airline_string + num_string + depart_city_string +
                     arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
-            for(int i = 0; i < 10; i++){
-                if(flight_check[i]){
+            for (int i = 0; i < 10; i++) {
+                if (flight_check[i]) {
                     intro_string = intro_string.concat("\n" + flights[i].get_airline() + " flight " + flights[i].get_flight());
                 }
             }
-        }
-        else if(action.equals("airline")){
-            intro_string = "The airlines " +  airline_string + num_string + depart_city_string +
+        } else if (action.equals("airline")) {
+            intro_string = "The airlines " + airline_string + num_string + depart_city_string +
                     arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
-            for(String airline: airline_list){
+            for (String airline : airline_list) {
                 intro_string = intro_string.concat("\n" + airline);
             }
 
@@ -206,42 +315,34 @@ public class Analyzer {
 
         //TODO: city in ai.api and here
 
-        else if(action.equals("depart_city")){
-            intro_string = "The departure cities " +  airline_string + num_string + depart_city_string +
+        else if (action.equals("depart_city")) {
+            intro_string = "The departure cities " + airline_string + num_string + depart_city_string +
                     arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
-            for(String city: depart_city_list){
+            for (String city : depart_city_list) {
                 intro_string = intro_string.concat("\n" + city);
             }
-        }
-
-        else if(action.equals("arrive_city")){
-            intro_string = "The arrival cities " +  airline_string + num_string + depart_city_string +
+        } else if (action.equals("arrive_city")) {
+            intro_string = "The arrival cities " + airline_string + num_string + depart_city_string +
                     arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
-            for(String city: arrive_city_list){
+            for (String city : arrive_city_list) {
                 intro_string = intro_string.concat("\n" + city);
             }
-        }
-
-        else if(action.equals("depart_time")){
-            intro_string = "The departure times for " +  airline_string + num_string + depart_city_string +
+        } else if (action.equals("depart_time")) {
+            intro_string = "The departure times for " + airline_string + num_string + depart_city_string +
                     arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
-            for(String time: depart_time_list){
+            for (String time : depart_time_list) {
                 intro_string = intro_string.concat("\n" + time);
             }
-        }
-
-        else if(action.equals("arrive_time")){
-            intro_string = "The arrival times for " +  airline_string + num_string + depart_city_string +
+        } else if (action.equals("arrive_time")) {
+            intro_string = "The arrival times for " + airline_string + num_string + depart_city_string +
                     arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
-            for(String time: arrive_time_list){
+            for (String time : arrive_time_list) {
                 intro_string = intro_string.concat("\n" + time);
             }
-        }
-
-        else if(action.equals("status")){
-            intro_string = "The statuses for " +  airline_string + num_string + depart_city_string +
+        } else if (action.equals("status")) {
+            intro_string = "The statuses for " + airline_string + num_string + depart_city_string +
                     arrive_city_string + depart_time_string + arrive_time_string + status_string + " are: ";
-            for(String status: status_list){
+            for (String status : status_list) {
                 intro_string = intro_string.concat("\n" + status);
             }
         }
@@ -252,7 +353,7 @@ public class Analyzer {
         return q;
     }
 
-    static private Flight[] create_array(){
+    static private Flight[] create_array() {
         Flight[] table = {
                 new Flight("AjaxAir", 113, "Portland", "08:03:00", "Atlanta", "12:51:00", "Landed", "99:99:99"),
                 new Flight("AjaxAir", 114, "Atlanta", "14:05:00", "Portland", "16:44:00", "Boarding", "99:99:99"),
@@ -268,7 +369,7 @@ public class Analyzer {
         return table;
     }
 
-    static private ArrayList<Flight> create_list(){
+    static private ArrayList<Flight> create_list() {
         ArrayList<Flight> table = new ArrayList<Flight>();
         table.add(new Flight("AjaxAir", 113, "Portland", "08:03:00", "Atlanta", "12:51:00", "Landed", "99:99:99"));
         table.add(new Flight("AjaxAir", 114, "Atlanta", "14:05:00", "Portland", "16:44:00", "Boarding", "99:99:99"));
@@ -285,9 +386,9 @@ public class Analyzer {
     }
 
     //since small flight list, just brute force check for this toy program
-    static private boolean array_contains(boolean array[]){
-        for (int i = 0; i < array.length; i++){
-            if(array[i]){
+    static private boolean array_contains(boolean array[]) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i]) {
                 return true;
             }
         }
