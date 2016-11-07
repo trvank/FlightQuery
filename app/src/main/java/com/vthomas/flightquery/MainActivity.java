@@ -1,8 +1,10 @@
 package com.vthomas.flightquery;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -18,17 +20,22 @@ import ai.api.model.Result;
 import com.google.gson.JsonElement;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 
-public class MainActivity extends AppCompatActivity implements AIListener{
+public class MainActivity extends AppCompatActivity implements AIListener, TextToSpeech.OnInitListener {
     String[] perms = {"android.permission.RECORD_AUDIO"};
     int permsRequestCode = 200;
+
+    private TextToSpeech tts = null;
+    private int MY_DATA_CHECK_CODE = 0;
 
     private AIService aiService;
     private QueryResult q = new QueryResult();
     private Button listenButton;
     private TextView resultTextView;
+    private TextView queryTextView;
 
 
 
@@ -45,6 +52,14 @@ public class MainActivity extends AppCompatActivity implements AIListener{
 
         listenButton = (Button) findViewById(R.id.listenButton);
         resultTextView = (TextView) findViewById(R.id.resultText);
+        queryTextView = (TextView) findViewById(R.id.queryText);
+
+        tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                tts.setLanguage(Locale.US);
+            }
+        });
 
         //request permission for recording audio if not yet granted
         if(!hasPermission(perms[0])){
@@ -53,6 +68,38 @@ public class MainActivity extends AppCompatActivity implements AIListener{
 
     }
 
+    //TTS Stuff
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == MY_DATA_CHECK_CODE) {
+            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                //create the TTS
+                tts = new TextToSpeech(this, this);
+            }
+            else {
+                //no data - install it now
+                Intent installTTSIntent = new Intent();
+                installTTSIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                startActivity(installTTSIntent);
+            }
+        }
+    }
+
+    // Implement onInitListener interface to confirm TTS is downloaded and enabled.
+    public void onInit(int initStatus) {
+        if (initStatus == TextToSpeech.SUCCESS) {
+            tts.setLanguage(Locale.US);
+//            tts.speak(text, TextToSpeech.QUEUE_ADD, null, null);
+        }
+        else if (initStatus == TextToSpeech.ERROR) {
+            Toast.makeText(this, "Sorry! Text To Speech failed...", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void speakWords(String speech) {
+        tts.speak(speech, TextToSpeech.QUEUE_ADD, null, null);
+    }
+
+    //AI.API stuff
     @Override
     public void onResult(AIResponse response) {
         Result result = response.getResult();
@@ -71,11 +118,14 @@ public class MainActivity extends AppCompatActivity implements AIListener{
         }
 
         //Show results in TextView
-        resultTextView.setText("Query:" + result.getResolvedQuery() +
-                "\nAction: " + result.getAction() +
-                "\nParameters: " + parameterString +
-                "\n text " + q.get_text_string() +
-                "\n speech " + q.get_speech_string());
+        queryTextView.setText("Query: " + result.getResolvedQuery());
+        resultTextView.setText("\n\nAction: " + result.getAction() +
+                "\n\nParameters: " + parameterString +
+                "\n\n text " + q.get_text_string() +
+                "\n\n speech " + q.get_speech_string());
+
+        // And speak it
+ //       speakWords(q.get_speech_string());
     }
 
     @Override
@@ -118,5 +168,16 @@ public class MainActivity extends AppCompatActivity implements AIListener{
             return(checkSelfPermission(permission)== PackageManager.PERMISSION_GRANTED);
         }
         return true;
+    }
+
+    protected void onDestroy() {
+        super.onDestroy();
+        tts.shutdown();
+    }
+
+
+    public void send(View view) {
+
+
     }
 }
