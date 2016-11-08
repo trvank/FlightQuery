@@ -2,6 +2,7 @@ package com.vthomas.flightquery;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -12,9 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ai.api.AIConfiguration;
+import ai.api.AIDataService;
 import ai.api.AIListener;
 import ai.api.AIService;
+import ai.api.AIServiceException;
 import ai.api.model.AIError;
+import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 import com.google.gson.JsonElement;
@@ -33,10 +37,14 @@ public class MainActivity extends AppCompatActivity implements AIListener, TextT
     private int MY_DATA_CHECK_CODE = 0;
 
     private AIService aiService;
+    private AIRequest text_req = new AIRequest();//trying text
+    private AIDataService aiDataService;//trying text
+
     private QueryResult q = new QueryResult();
     private Button listenButton;
     private TextView resultTextView;
     private TextView queryTextView;
+    private TextView textTextView;
 
     private ArrayList<String> actions_list;
 
@@ -51,10 +59,12 @@ public class MainActivity extends AppCompatActivity implements AIListener, TextT
                 AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(this, config);
         aiService.setListener(this);
+        aiDataService = new AIDataService(this, config);//trying text
 
         listenButton = (Button) findViewById(R.id.listenButton);
         resultTextView = (TextView) findViewById(R.id.resultText);
         queryTextView = (TextView) findViewById(R.id.queryText);
+        textTextView = (TextView) findViewById(R.id.typeText);
 
         tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -128,10 +138,10 @@ public class MainActivity extends AppCompatActivity implements AIListener, TextT
 
         //Show results in TextView
         queryTextView.setText("Query: " + result.getResolvedQuery());
-        resultTextView.setText("\n\nAction: " + result.getAction() +
-                "\n\nParameters: " + parameterString +
-                "\n\n text " + q.get_text_string() +
-                "\n\n speech " + q.get_speech_string());
+        resultTextView.setText(//"\n\nAction: " + result.getAction() +
+                //"\n\nParameters: " + parameterString +
+                "\n\n" + q.get_text_string());
+                //"\n\n speech " + q.get_speech_string());
 
         // And speak it
         speakWords(q.get_speech_string());
@@ -186,8 +196,58 @@ public class MainActivity extends AppCompatActivity implements AIListener, TextT
 
 
     public void send(View view) {
+        text_req.setQuery(textTextView.getText().toString());
 
+        new AsyncTask<AIRequest, Void, AIResponse>() {
+            @Override
+            protected AIResponse doInBackground(AIRequest... requests) {
+                final AIRequest request = requests[0];
+                try {
+                    final AIResponse response = aiDataService.request(text_req);
+                    return response;
+                } catch (AIServiceException e) {
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(AIResponse aiResponse) {
+                if (aiResponse != null) {
+                    // process aiResponse here
+                    Result result = aiResponse.getResult();
+//        Map<String, JsonElement> map = new HashMap<String, JsonElement>();
 
+                    //Get parameters
+                    String parameterString = "";
+                    if (result.getParameters() != null && !result.getParameters().isEmpty()){
+                        for(final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()){
+                            parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ")";
+                        }
+                    }
+
+                    if((actions_list.contains(result.getAction()))){
+                        q = Analyzer.airline(result.getParameters(), result.getAction());
+                    }
+                    else{
+                        q.set_text_string("I may have misunderstood the query.");
+                        q.set_speech_string("I may have misunderstood the query. " +
+                                "Do you have a question about todays flights that I can help you with?");
+                    }
+
+                    //Show results in TextView
+                    queryTextView.setText("Query: " + result.getResolvedQuery());
+                    resultTextView.setText(//"\n\nAction: " + result.getAction() +
+                            //"\n\nParameters: " + parameterString +
+                            "\n\n" + q.get_text_string());
+                            //"\n\n speech " + q.get_speech_string());
+
+                    // And speak it
+                    speakWords(q.get_speech_string());
+
+                }
+            }
+        }.execute(text_req);
+
+        textTextView.setText("");
     }
 
     private ArrayList<String> set_actions(){
