@@ -19,6 +19,7 @@ import ai.api.model.AIResponse;
 import ai.api.model.Result;
 import com.google.gson.JsonElement;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements AIListener, TextT
     private TextView resultTextView;
     private TextView queryTextView;
 
+    private ArrayList<String> actions_list;
 
 
     @Override
@@ -65,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements AIListener, TextT
         if(!hasPermission(perms[0])){
             requestPermissions(perms, permsRequestCode);
         }
+
+        actions_list = set_actions();
 
     }
 
@@ -113,8 +117,13 @@ public class MainActivity extends AppCompatActivity implements AIListener, TextT
             }
         }
 
-        if(!(result.getAction().equals("input.unknown"))){
+        if((actions_list.contains(result.getAction()))){
             q = Analyzer.airline(result.getParameters(), result.getAction());
+        }
+        else{
+            q.set_text_string("I may have misunderstood the query.");
+            q.set_speech_string("I may have misunderstood the query. " +
+                    "Do you have a question about todays flights that I can help you with?");
         }
 
         //Show results in TextView
@@ -125,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements AIListener, TextT
                 "\n\n speech " + q.get_speech_string());
 
         // And speak it
- //       speakWords(q.get_speech_string());
+        speakWords(q.get_speech_string());
     }
 
     @Override
@@ -179,5 +188,17 @@ public class MainActivity extends AppCompatActivity implements AIListener, TextT
     public void send(View view) {
 
 
+    }
+
+    private ArrayList<String> set_actions(){
+        ArrayList<String> list = new ArrayList<>();
+        list.add("airline");
+        list.add("arrive_time");
+        list.add("arrive_city");
+        list.add("depart_time");
+        list.add("depart_city");
+        list.add("flight");
+        list.add("status");
+        return list;
     }
 }
