@@ -273,11 +273,11 @@ public class Analyzer {
                 }
                 if (!(depart_time_list.contains(flights[i].get_depart_time()))) {
                     depart_time_list.add(flights[i].get_airline() + " flight " + flights[i].get_flight()
-                            + " departs at " + flights[i].get_depart_time());
+                            + " departs at " + convert_time(flights[i].get_depart_time()));
                 }
                 if (!(arrive_time_list.contains(flights[i].get_arrive_time()))) {
                     arrive_time_list.add(flights[i].get_airline() + " flight " + flights[i].get_flight()
-                            + " arrives at " + flights[i].get_arrive_time());
+                            + " arrives at " + convert_time(flights[i].get_arrive_time()));
                 }
                 if (!(depart_city_list.contains(flights[i].get_depart_city()))) {
                     depart_city_list.add(flights[i].get_depart_city());
@@ -286,8 +286,15 @@ public class Analyzer {
                     arrive_city_list.add(flights[i].get_arrive_city());
                 }
                 if (!(status_list.contains(flights[i].get_status()))) {
-                    status_list.add(flights[i].get_airline() + " flight " + flights[i].get_flight()
-                            + " is " + flights[i].get_status());
+//                    status_list.add(flights[i].get_airline() + " flight " + flights[i].get_flight()
+ //                           + " is " + flights[i].get_status());
+                    //TODO test this part out!
+                    String temp = flights[i].get_airline() + " flight " + flights[i].get_flight()
+                            + " is " + flights[i].get_status();
+                    if(flights[i].get_status().equals("Delayed")){
+                        temp = temp.concat("until nine fifty five");
+                    }
+                    status_list.add(temp);
                 }
                 flight_string = flight_string.concat("\n" + speak_flights[i].to_string());
                 Log.d("string", "string is " + flight_string);
@@ -408,6 +415,28 @@ public class Analyzer {
             }
         }
         return false;
+    }
+
+    static String convert_time(String time){
+        String[] split_time = time.split(":");
+        String hour = split_time[0];
+        String min = split_time[1];
+        String ampm;
+
+        int hour_int = Integer.parseInt(split_time[0]);
+        if(hour_int > 12){
+            int temp = hour_int - 12;
+            hour = Integer.toString(temp);
+        }
+
+        if(hour_int > 12){
+            ampm = "P M";
+        }
+        else{
+            ampm = "A M";
+        }
+
+        return hour + " " + min + " " + ampm;
     }
 
 

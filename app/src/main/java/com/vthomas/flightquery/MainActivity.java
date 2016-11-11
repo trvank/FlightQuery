@@ -129,6 +129,9 @@ public class MainActivity extends AppCompatActivity implements AIListener, TextT
 
         if((actions_list.contains(result.getAction()))){
             q = Analyzer.airline(result.getParameters(), result.getAction());
+            if(q.get_speech_string().equals("")){
+                q.set_speech_string("No results meet your criteria");
+            }
         }
         else{
             q.set_text_string("I may have misunderstood the query.");
@@ -226,6 +229,9 @@ public class MainActivity extends AppCompatActivity implements AIListener, TextT
 
                     if((actions_list.contains(result.getAction()))){
                         q = Analyzer.airline(result.getParameters(), result.getAction());
+                        if(q.get_speech_string().equals("")){
+                            q.set_speech_string("No results meet your criteria");
+                        }
                     }
                     else{
                         q.set_text_string("I may have misunderstood the query.");
